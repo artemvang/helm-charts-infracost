@@ -44,12 +44,6 @@ export INFRACOST_API_KEY=$INFRACOST_API_KEY
 infracost breakdown --path /path/to/code
 ```
 
-Run the following to retrieve the service IP for the Cloud Pricing API:
-
-  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-        You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "cloud-pricing-api.fullname" . }}'
-export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "cloud-pricing-api.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-
 ## Prerequisites
 
 * Kubernetes 1.12+ with Beta APIs enabled
