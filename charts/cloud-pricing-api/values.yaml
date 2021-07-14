@@ -174,7 +174,7 @@ job:
   # -- Job backoff limit
   backoffLimit: 6
   # -- Job schedule
-  schedule: "0 4 * * *"
+  schedule: "0 4 * * SUN"
   # -- History limit for successful jobs
   successfulJobsHistoryLimit: 5
   # -- History limit for failed jobs
