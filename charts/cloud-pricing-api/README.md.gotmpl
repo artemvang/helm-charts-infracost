@@ -34,7 +34,7 @@ You can then use `http://localhost:8080` as the `<CLOUD_PRICING_API_ENDPOINT>` b
 
 You can retrieve the configured static API key using:
 ```sh
-export INFRACOST_API_KEY=$(kubectl get secret --namespace <NAMESPACE> cloud-pricing-api.name --template="{{ index .data \"self-hosted-infracost-api-key\" }}" | base64 -D)
+export INFRACOST_API_KEY=$(kubectl get secret --namespace <NAMESPACE> cloud-pricing-api.name --template="{{"{{"}} index .data \"self-hosted-infracost-api-key\" {{"}}"}}" | base64 -D)
 ```
 
 To configure Infracost to use the self-hosted Cloud Pricing API you can use:
@@ -47,8 +47,8 @@ infracost breakdown --path /path/to/code
 Run the following to retrieve the service IP for the Cloud Pricing API:
 
   NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-        You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "cloud-pricing-api.fullname" . }}'
-export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "cloud-pricing-api.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+        You can watch the status of by running 'kubectl get --namespace {{"{{"}} .Release.Namespace }} svc -w {{"{{"}} include "cloud-pricing-api.fullname" . {{"}}"}}'
+export SERVICE_IP=$(kubectl get svc --namespace {{"{{"}} .Release.Namespace {{"}}"}} {{"{{"}} include "cloud-pricing-api.fullname" . {{"}}"}} --template "{{"{{"}}"{{"{{"}} range (index .status.loadBalancer.ingress 0) {{"}}"}}{{"{{"}}.{{"}}"}}{{"{{"}} end {{"}}"}}"{{"}}"}}")
 
 ## Prerequisites
 

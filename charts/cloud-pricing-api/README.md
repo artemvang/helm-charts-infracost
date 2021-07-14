@@ -20,6 +20,36 @@ Uninstalling the Chart:
 helm uninstall cloud-pricing-api
 ```
 
+## Configure Infracost to use the self-hosted Cloud Pricing API
+
+The best way to get instructions for configuring Infracost to use the self-hosted Cloud Pricing API is to check the output at the end of the `helm install` step since this contains the exact commands you need to run. If these are not available then instructions are below.
+
+If you don't have ingress enabled you can port-forward the Cloud Pricing API to your local machine by doing this:
+```sh
+export POD_NAME=$(kubectl get pods --namespace <NAMESPACE> -l "app.kubernetes.io/name=cloud-pricing-api,app.kubernetes.io/instance=cloud-pricing-api" -o jsonpath="{.items[0].metadata.name}")
+export CONTAINER_PORT=$(kubectl get pod --namespace <NAMESPACE> $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+kubectl --namespace <NAMESPACE> port-forward $POD_NAME 8080:$CONTAINER_PORT
+```
+You can then use `http://localhost:8080` as the `<CLOUD_PRICING_API_ENDPOINT>` below.
+
+You can retrieve the configured static API key using:
+```sh
+export INFRACOST_API_KEY=$(kubectl get secret --namespace <NAMESPACE> cloud-pricing-api.name --template="{{ index .data \"self-hosted-infracost-api-key\" }}" | base64 -D)
+```
+
+To configure Infracost to use the self-hosted Cloud Pricing API you can use:
+```sh
+export INFRACOST_PRICING_API_ENDPOINT=https://<CLOUD_PRICING_API_ENDPOINT>
+export INFRACOST_API_KEY=$INFRACOST_API_KEY
+infracost breakdown --path /path/to/code
+```
+
+Run the following to retrieve the service IP for the Cloud Pricing API:
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "cloud-pricing-api.fullname" . }}'
+export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "cloud-pricing-api.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+
 ## Prerequisites
 
 * Kubernetes 1.12+ with Beta APIs enabled
@@ -104,7 +134,7 @@ helm install cloud-pricing-api infracost/cloud-pricing-api \
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example:
 
 ```sh
-$ helm install -f my-values.yaml cloud-pricing-api infracost/cloud-pricing-api
+helm install -f my-values.yaml cloud-pricing-api infracost/cloud-pricing-api
 ```
 
 ## PostgreSQL
@@ -114,6 +144,34 @@ By default, PostgreSQL is installed as part of the chart using the [Bitnami Post
 To use an external PostgreSQL server set `postgresql.enabled` to `false` and then set the `postgresql.external.*` values.
 
 To avoid issues when upgrading this chart, provide `postgresql.postgresqlPassword` for subsequent upgrades. This is due to an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise. See https://github.com/helm/charts/tree/master/stable/postgresql#upgrade for more detail.
+
+## Examples
+
+### Install in AWS with ALB ingress
+
+This is how the Infracost team deploys the Cloud Pricing API on our EKS cluster to test it.
+
+```sh
+export MONGODB_URI=mongodb://pricing-api-mongo:27017/pricing # TODO: Remove when we switch fully to PostgreSQL
+export DOMAIN=cloud-pricing.api.dev.infracost.io
+export CERTIFICATE_DOMAIN=*.api.dev.infracost.io
+export CERTIFICATE_ARN=$(aws acm list-certificates --query 'CertificateSummaryList[].[CertificateArn,DomainName]' --output text | grep ${CERTIFICATE_DOMAIN} | cut -f1)
+
+helm install cloud-pricing-api infracost/cloud-pricing-api \
+  --set mongoDBURI=${MONGODB_URI} \
+  --set ingress.enabled=true \
+  --set ingress.hosts\[0\].host=${DOMAIN} \
+  --set ingress.hosts\[0\].paths\[0\].path=/\* \
+  --set ingress.extraPaths\[0\].path=/\* \
+  --set ingress.extraPaths\[0\].backend.serviceName=ssl-redirect \
+  --set ingress.extraPaths\[0\].backend.servicePort=use-annotation \
+  --set ingress.annotations."kubernetes\.io/ingress\.class"=alb \
+  --set ingress.annotations."alb\.ingress\.kubernetes\.io/scheme"=internet-facing \
+  --set ingress.annotations."alb\.ingress\.kubernetes\.io/target-type"=ip \
+  --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${CERTIFICATE_ARN} \
+  --set-string ingress.annotations."alb\.ingress\.kubernetes\.io/listen-ports"="\[\{\"HTTP\": 80\}\, \{\"HTTPS\":443\}\]" \
+  --set-string ingress.annotations."alb\.ingress\.kubernetes\.io/ssl-redirect"="\{\"Type\": \"redirect\"\, \"RedirectConfig\": \{ \"Protocol\": \"HTTPS\"\, \"Port\": \"443\"\, \"StatusCode\": \"HTTP_301\"\}\}"
+```
 
 ## Development
 
