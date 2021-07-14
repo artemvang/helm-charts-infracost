@@ -5,7 +5,7 @@
 **Note: This is under active development so is not ready to be used yet**
 
 This repository contains Helm charts for:
- * [Cloud Pricing API](https://github.com/infracost/helm-charts/blob/master/charts/cloud-pricing-api/README.md):
+ * [Cloud Pricing API](https://github.com/infracost/cloud-pricing-api):
 
     ```sh
     helm repo add infracost https://infracost.github.io/helm-charts/
@@ -14,34 +14,6 @@ This repository contains Helm charts for:
     ```
 
     For full details of options and see the [Cloud Pricing API chart README](https://github.com/infracost/helm-charts/blob/master/charts/cloud-pricing-api/README.md).
-
-## Examples
-
-### Install in AWS with ALB ingress
-
-This is how the Infracost team deploys the Cloud Pricing API on our EKS cluster to test it.
-
-```sh
-export MONGODB_URI=mongodb://pricing-api-mongo:27017/pricing # TODO: Remove when we switch fully to PostgreSQL
-export DOMAIN=cloud-pricing.api.dev.infracost.io
-export CERTIFICATE_DOMAIN=*.api.dev.infracost.io
-export CERTIFICATE_ARN=$(aws acm list-certificates --query 'CertificateSummaryList[].[CertificateArn,DomainName]' --output text | grep ${CERTIFICATE_DOMAIN} | cut -f1)
-
-helm install cloud-pricing-api infracost/cloud-pricing-api \
-  --set mongoDBURI=${MONGODB_URI} \
-  --set ingress.enabled=true \
-  --set ingress.hosts\[0\].host=${DOMAIN} \
-  --set ingress.hosts\[0\].paths\[0\].path=/\* \
-  --set ingress.extraPaths\[0\].path=/\* \
-  --set ingress.extraPaths\[0\].backend.serviceName=ssl-redirect \
-  --set ingress.extraPaths\[0\].backend.servicePort=use-annotation \
-  --set ingress.annotations."kubernetes\.io/ingress\.class"=alb \
-  --set ingress.annotations."alb\.ingress\.kubernetes\.io/scheme"=internet-facing \
-  --set ingress.annotations."alb\.ingress\.kubernetes\.io/target-type"=ip \
-  --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${CERTIFICATE_ARN} \
-  --set-string ingress.annotations."alb\.ingress\.kubernetes\.io/listen-ports"="\[\{\"HTTP\": 80\}\, \{\"HTTPS\":443\}\]" \
-  --set-string ingress.annotations."alb\.ingress\.kubernetes\.io/ssl-redirect"="\{\"Type\": \"redirect\"\, \"RedirectConfig\": \{ \"Protocol\": \"HTTPS\"\, \"Port\": \"443\"\, \"StatusCode\": \"HTTP_301\"\}\}"
-```
 
 ## Release
 
