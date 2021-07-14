@@ -1,0 +1,66 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+## TL;DR
+
+To install the chart with the name `cloud-pricing-api`:
+
+```sh
+helm repo add infracost https://infracost.github.io/helm-charts/
+helm repo update
+helm install cloud-pricing-api infracost/cloud-pricing-api
+```
+
+Uninstalling the Chart:
+
+```sh
+helm uninstall cloud-pricing-api
+```
+
+## Prerequisites
+
+* Kubernetes 1.12+ with Beta APIs enabled
+* Helm >= 3.1.0
+* PV provisioner support in the underlying infrastructure
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
+
+```sh
+helm install cloud-pricing-api infracost/cloud-pricing-api \
+  --set selfHostedInfracostAPIKey=CUSTOM_API_KEY
+```
+
+Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example:
+
+```sh
+$ helm install -f my-values.yaml cloud-pricing-api infracost/cloud-pricing-api
+```
+
+## PostgreSQL
+
+By default, PostgreSQL is installed as part of the chart using the [Bitnami PostgreSQL chart](https://github.com/bitnami/charts/blob/master/bitnami/postgresql/README.md). You can specify the values for this chart by prefixing them with `postgresql.`.
+
+To use an external PostgreSQL server set `postgresql.enabled` to `false` and then set the `postgresql.external.*` values.
+
+To avoid issues when upgrading this chart, provide `postgresql.postgresqlPassword` for subsequent upgrades. This is due to an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise. See https://github.com/helm/charts/tree/master/stable/postgresql#upgrade for more detail.
+
+## Development
+
+To install the chart from your local repository with the name `my-release`:
+
+```sh
+helm install my-release .
+```
+
+To uninstall `my-release` deployment:
+
+```sh
+helm uninstall my-release
+```

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: cloud-pricing-api
-description: A Helm chart for running the Infracost Cloud Pricing API
+description: A Helm chart for running the Infracost [Cloud Pricing API](https://github.com/infracost/cloud-pricing-api).
 
 # A chart can be either an 'application' or a 'library' chart.
 #

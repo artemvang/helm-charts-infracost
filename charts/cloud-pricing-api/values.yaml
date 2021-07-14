@@ -3,36 +3,51 @@
 # Declare variables to be passed into your templates.
 
 image:
+  # -- Cloud Pricing API image
   repository: infracost/cloud-pricing-api
+
+  # -- Image pull policy
   # pullPolicy: IfNotPresent
   pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
+
+  # -- Overrides the image tag whose default is the chart appVersion.g
   tag: ""
 
+# -- Any image pull secrets
 imagePullSecrets: []
+
+# -- Name override for the deployed app
 nameOverride: ""
+
+# -- Full name override for the deployed app
 fullnameOverride: ""
 
 # By default a single static API key will be created for the Cloud Pricing API.
 # To specify the API key or disable API keys use the below settings
-# selfHostedInfracostAPIKey: CUSTOM_INFRACOST_API_KEY
-# disableSelfHostedInfracostAPIKey: true
+# -- Specify a custom API key for the Cloud Pricing API
+selfHostedInfracostAPIKey: ""
+# -- Whether to disable API authentication for the Cloud Pricing API
+disableSelfHostedInfracostAPIKey: false
+# -- MongoDB URI
 mongoDBURI: mongodb://mongo:27017/pricing
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# -- Any pod annotations
 podAnnotations: {}
 
+# -- The pod security context
 podSecurityContext: {}
   # fsGroup: 2000
 
+# -- The container security context
 securityContext: {}
   # capabilities:
   #   drop:
@@ -42,11 +57,15 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
+  # -- Kubernetes service type
   type: ClusterIP
+  # -- Kubernetes service port
   port: 80
 
 ingress:
+  # -- Enable the ingress controller resource
   enabled: false
+  # -- Ingress annotation
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -56,17 +75,22 @@ ingress:
   #       serviceName: ssl-redirect
   #       servicePort: use-annotation
   hosts:
-    - host: cloud-pricing-api.local
+    - # -- Host name
+      host: cloud-pricing-api.local
       paths:
-      - path: /
+      - # -- Path for host
+        path: /
 
+  # -- TLS configuration
   tls: []
   #  - secretName: cloud-pricing-api-tls
   #    hosts:
   #      - cloud-pricing-api.local
 
 postgresql:
+  # -- Deploy PostgreSQL servers. See [below](#postgresql) for more details
   enabled: true
+  # -- Have the secrets mounted as a file instead of env vars
   usePasswordFile: false
   # external:
   #   host:
@@ -74,36 +98,57 @@ postgresql:
   #   database:
   #   user:
   #   password:
-  # Use an existing secret with the PostgreSQL password
+  # -- Use an existing secret with the PostgreSQL password
   # existingSecret:
+  # -- Name of the PostgreSQL database
   postgresqlDatabase: cloud-pricing-api
+  # -- Name of the PostgreSQL user
   postgresqlUsername: cloud-pricing-api
 
 api:
+  # -- Replica count
   replicaCount: 1
 
   livenessProbe:
+    # -- Enable the liveness probe
     enabled: true
+    # -- The liveness probe initial delay seconds
     initialDelaySeconds: 30
+    # -- The liveness probe period seconds
     periodSeconds: 5
+    # -- The liveness probe timeout seconds
     timeoutSeconds: 2
+    # -- The liveness probe failure threshold
     failureThreshold: 3
+    # -- The liveness probe success threshold
     successThreshold: 1
   readinessProbe:
+    # -- Enable the readiness probe
     enabled: true
+    # -- The readiness probe initial delay seconds
     initialDelaySeconds: 30
+    # -- The readiness probe period seconds
     periodSeconds: 5
+    # -- The readiness probe timeout seconds
     timeoutSeconds: 2
+    # -- The readiness probe failure threshold
     failureThreshold: 3
+    # -- The readiness probe success threshold
     successThreshold: 1
   
   autoscaling:
+    # -- Create a HorizontalPodAutoscaler for the API 
     enabled: false
+    # -- The minimum replicas for the API autoscaler
     minReplicas: 1
-    maxReplicas: 100
+    # -- The maximum replicas for the API autoscaler
+    maxReplicas: 10
+    # -- The target CPU threshold for the API autoscaler
     targetCPUUtilizationPercentage: 80
+    # -- The target memory threshold for the API autoscaler
     # targetMemoryUtilizationPercentage: 80
 
+  # -- API resource limits and requests
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -116,19 +161,28 @@ api:
     #   cpu: 100m
     #   memory: 128Mi
 
+  # -- API node selector
   nodeSelector: {}
+  # -- API tolerations
   tolerations: []
+  # -- API affinity
   affinity: {}
 
 job:
+  # -- Run the job as a one-off on deploy
   runInitJob: true
+  # -- Job backoff limit
   backoffLimit: 6
+  # -- Job schedule
   schedule: "0 4 * * *"
+  # -- History limit for successful jobs
   successfulJobsHistoryLimit: 5
+  # -- History limit for failed jobs
   failedJobsHistoryLimit: 5
-  backoffLimit: 6
+  # -- Deadline seconds for the job starting
   startingDeadlineSeconds: 3600
 
+  # -- Job resource limits and requests
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -141,6 +195,9 @@ job:
     #   cpu: 100m
     #   memory: 128Mi
 
+  # -- Job node selector
   nodeSelector: {}
+  # -- Job tolerations
   tolerations: []
+  # -- Job affinity
   affinity: {}
