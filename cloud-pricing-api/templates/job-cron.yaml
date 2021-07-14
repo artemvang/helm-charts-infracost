@@ -1,0 +1,74 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "cloud-pricing-api.fullname" . }}-cronjob
+  labels:
+    {{- include "cloud-pricing-api.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.job.schedule }}"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.job.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.job.failedJobsHistoryLimit }}
+  startingDeadlineSeconds: {{ .Values.job.startingDeadlineSeconds }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.job.backoffLimit }}
+      template:
+        metadata:
+          {{- with .Values.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          labels:
+            {{- include "cloud-pricing-api.selectorLabels" . | nindent 12 }}
+        spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          restartPolicy: Never
+          serviceAccountName: {{ include "cloud-pricing-api.serviceAccountName" . }}
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          containers:
+            - name: {{ .Chart.Name }}
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 16 }}
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["npm",  "run", "update"]
+              resources:
+                {{- toYaml .Values.job.resources | nindent 16 }}
+              env:
+                - name: MONGODB_URI
+                  value: {{ .Values.mongoDBURI }}
+                - name: DB_HOST
+                  value: {{ include "cloud-pricing-api.postgresql.host" . }}
+                - name: DB_PORT
+                  value: {{ include "cloud-pricing-api.postgresql.port" . }}
+                - name: DB_NAME
+                  value: {{ .Values.postgresql.postgresqlDatabase | quote }}
+                - name: DB_USERNAME
+                  value: {{ .Values.postgresql.postgresqlUsername | quote }}
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "cloud-pricing-api.postgresql.secretName" . }}
+                      key: postgresql-password
+                - name: SELF_HOSTED_INFRACOST_PRICING_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "cloud-pricing-api.fullname" . }}
+                      key: self-hosted-infracost-api-key
+          {{- with .Values.job.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.job.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.job.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
