@@ -85,7 +85,7 @@ infracost breakdown --path /path/to/code
 | fullnameOverride | string | `""` | Full name override for the deployed app |
 | image.pullPolicy | string | `"Always"` | Image pull policy pullPolicy: IfNotPresent |
 | image.repository | string | `"infracost/cloud-pricing-api"` | Cloud Pricing API image |
-| image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion.g |
+| image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` | Any image pull secrets |
 | ingress.annotations | object | `{}` | Ingress annotation |
 | ingress.enabled | bool | `false` | Enable the ingress controller resource |
@@ -98,7 +98,7 @@ infracost breakdown --path /path/to/code
 | job.nodeSelector | object | `{}` | Job node selector |
 | job.resources | object | `{}` | Job resource limits and requests |
 | job.runInitJob | bool | `true` | Run the job as a one-off on deploy |
-| job.schedule | string | `"0 4 * * *"` | Job schedule |
+| job.schedule | string | `"0 4 * * SUN"` | Job schedule |
 | job.startingDeadlineSeconds | int | `3600` | Deadline seconds for the job starting |
 | job.successfulJobsHistoryLimit | int | `5` | History limit for successful jobs |
 | job.tolerations | list | `[]` | Job tolerations |
@@ -163,6 +163,7 @@ helm install cloud-pricing-api infracost/cloud-pricing-api \
   --set ingress.annotations."alb\.ingress\.kubernetes\.io/scheme"=internet-facing \
   --set ingress.annotations."alb\.ingress\.kubernetes\.io/target-type"=ip \
   --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${CERTIFICATE_ARN} \
+  --set ingress.annotations."alb\.ingress\.kubernetes\.io/healthcheck-path"=/health
   --set-string ingress.annotations."alb\.ingress\.kubernetes\.io/listen-ports"="\[\{\"HTTP\": 80\}\, \{\"HTTPS\":443\}\]" \
   --set-string ingress.annotations."alb\.ingress\.kubernetes\.io/ssl-redirect"="\{\"Type\": \"redirect\"\, \"RedirectConfig\": \{ \"Protocol\": \"HTTPS\"\, \"Port\": \"443\"\, \"StatusCode\": \"HTTP_301\"\}\}"
 ```
