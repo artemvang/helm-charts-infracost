@@ -26,7 +26,7 @@ Run the following to retrieve the service IP for the Cloud Pricing API:
 export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "cloud-pricing-api.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
 {{- $urls = append $urls (printf "http://$SERVICE_IP:%s" .Values.service.port) -}}
 
-{{- else if contains "ClusterIP" .Values.service.type }}
+{{- else }}
 {{- $urls = append $urls "http://127.0.0.1:8080" -}}
 Run the following to port-forward the Cloud Pricing API to your local machine:
 

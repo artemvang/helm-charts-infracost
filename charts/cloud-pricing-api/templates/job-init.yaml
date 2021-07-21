@@ -30,21 +30,21 @@ spec:
             {{- toYaml .Values.securityContext | nindent 16 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["npm",  "run", "update"]
+          command: ["npm",  "run", "job:init"]
           resources:
             {{- toYaml .Values.job.resources | nindent 16 }}
           env:
             - name: MONGODB_URI
               value: {{ .Values.mongoDBURI }}
-            - name: DB_HOST
+            - name: POSTGRES_HOST
               value: {{ include "cloud-pricing-api.postgresql.host" . }}
-            - name: DB_PORT
+            - name: POSTGRES_PORT
               value: {{ include "cloud-pricing-api.postgresql.port" . }}
-            - name: DB_NAME
+            - name: POSTGRES_DB
               value: {{ .Values.postgresql.postgresqlDatabase | quote }}
-            - name: DB_USERNAME
+            - name: POSTGRES_USER
               value: {{ .Values.postgresql.postgresqlUsername | quote }}
-            - name: DB_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "cloud-pricing-api.postgresql.secretName" . }}
@@ -54,6 +54,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "cloud-pricing-api.fullname" . }}
                   key: self-hosted-infracost-api-key
+            {{- toYaml .Values.extraEnv | nindent 12 }}
       {{- with .Values.job.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 12 }}
