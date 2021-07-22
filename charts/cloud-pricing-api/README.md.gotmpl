@@ -11,7 +11,9 @@ To install the chart with the name `cloud-pricing-api`:
 ```sh
 helm repo add infracost https://infracost.github.io/helm-charts/
 helm repo update
-helm install cloud-pricing-api infracost/cloud-pricing-api
+# `cat ~/.config/infracost/credentials.yml` or run `infracost register` to create
+# a new one. This is used by the weekly job to download the latest cloud pricing DB dump from our service.
+helm install cloud-pricing-api infracost/cloud-pricing-api --set job.InfracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
 ```
 
 Uninstalling the Chart:
@@ -58,7 +60,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 ```sh
 helm install cloud-pricing-api infracost/cloud-pricing-api \
-  --set selfHostedInfracostAPIKey=CUSTOM_API_KEY
+  --set api.selfHostedInfracostAPIKey=CUSTOM_API_KEY
 ```
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example:
@@ -82,13 +84,11 @@ To avoid issues when upgrading this chart, provide `postgresql.postgresqlPasswor
 This is how the Infracost team deploys the Cloud Pricing API on our EKS cluster to test it.
 
 ```sh
-export MONGODB_URI=mongodb://pricing-api-mongo:27017/pricing # TODO: Remove when we switch fully to PostgreSQL
 export DOMAIN=cloud-pricing.api.dev.infracost.io
 export CERTIFICATE_DOMAIN=*.api.dev.infracost.io
 export CERTIFICATE_ARN=$(aws acm list-certificates --query 'CertificateSummaryList[].[CertificateArn,DomainName]' --output text | grep ${CERTIFICATE_DOMAIN} | cut -f1)
 
 helm install cloud-pricing-api infracost/cloud-pricing-api \
-  --set mongoDBURI=${MONGODB_URI} \
   --set ingress.enabled=true \
   --set ingress.hosts\[0\].host=${DOMAIN} \
   --set ingress.hosts\[0\].paths\[0\].path=/\* \
@@ -116,4 +116,11 @@ To uninstall `my-release` deployment:
 
 ```sh
 helm uninstall my-release
+```
+
+To debug issues, such as `job-cron.yaml: error converting YAML to JSON: yaml: line X`, use the following:
+
+```sh
+helm template cloud-pricing-api charts/cloud-pricing-api/ --debug > out.yaml
+cat out.yaml # look for issues in the YAML in the erroring resource
 ```

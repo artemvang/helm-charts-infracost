@@ -40,27 +40,34 @@ spec:
               resources:
                 {{- toYaml .Values.job.resources | nindent 16 }}
               env:
-                - name: MONGODB_URI
-                  value: {{ .Values.mongoDBURI }}
                 - name: POSTGRES_HOST
                   value: {{ include "cloud-pricing-api.postgresql.host" . }}
                 - name: POSTGRES_PORT
                   value: {{ include "cloud-pricing-api.postgresql.port" . }}
                 - name: POSTGRES_DB
-                  value: {{ .Values.postgresql.postgresqlDatabase | quote }}
+                  value: {{ include "cloud-pricing-api.postgresql.database" . }}
                 - name: POSTGRES_USER
-                  value: {{ .Values.postgresql.postgresqlUsername | quote }}
+                  value: {{ include "cloud-pricing-api.postgresql.user" . }}
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: {{ include "cloud-pricing-api.postgresql.secretName" . }}
                       key: postgresql-password
+                - name: INFRACOST_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "cloud-pricing-api.fullname" . }}
+                      key: infracost-api-key
+                {{- if not .Values.api.disableSelfHostedInfracostAPIKey }}
                 - name: SELF_HOSTED_INFRACOST_PRICING_API_KEY
                   valueFrom:
                     secretKeyRef:
                       name: {{ include "cloud-pricing-api.fullname" . }}
                       key: self-hosted-infracost-api-key
+                {{- end }}
+                {{- if .Values.extraEnv }}
                 {{- toYaml .Values.extraEnv | nindent 16 }}
+                {{- end }}
           {{- with .Values.job.nodeSelector }}
           nodeSelector:
             {{- toYaml . | nindent 12 }}

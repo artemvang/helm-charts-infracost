@@ -11,7 +11,9 @@ To install the chart with the name `cloud-pricing-api`:
 ```sh
 helm repo add infracost https://infracost.github.io/helm-charts/
 helm repo update
-helm install cloud-pricing-api infracost/cloud-pricing-api
+# `cat ~/.config/infracost/credentials.yml` or run `infracost register` to create
+# a new one. This is used by the weekly job to download the latest cloud pricing DB dump from our service.
+helm install cloud-pricing-api infracost/cloud-pricing-api --set job.InfracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
 ```
 
 Uninstalling the Chart:
@@ -65,6 +67,7 @@ infracost breakdown --path /path/to/code
 | api.autoscaling.maxReplicas | int | `10` | The maximum replicas for the API autoscaler |
 | api.autoscaling.minReplicas | int | `1` | The minimum replicas for the API autoscaler |
 | api.autoscaling.targetCPUUtilizationPercentage | int | `80` | The target CPU threshold for the API autoscaler |
+| api.disableSelfHostedInfracostAPIKey | bool | `false` |  |
 | api.livenessProbe.enabled | bool | `true` | Enable the liveness probe |
 | api.livenessProbe.failureThreshold | int | `3` | The liveness probe failure threshold |
 | api.livenessProbe.initialDelaySeconds | int | `30` | The liveness probe initial delay seconds |
@@ -80,8 +83,8 @@ infracost breakdown --path /path/to/code
 | api.readinessProbe.timeoutSeconds | int | `2` | The readiness probe timeout seconds |
 | api.replicaCount | int | `1` | Replica count |
 | api.resources | object | `{}` | API resource limits and requests |
+| api.selfHostedInfracostAPIKey | string | `""` | Specify a custom API key for CLIs to authenticate with this Cloud Pricing API. Not setting this will cause the helm chat to generate one for you. |
 | api.tolerations | list | `[]` | API tolerations |
-| disableSelfHostedInfracostAPIKey | bool | `false` | Whether to disable API authentication for the Cloud Pricing API |
 | fullnameOverride | string | `""` | Full name override for the deployed app |
 | image.pullPolicy | string | `"Always"` | Image pull policy pullPolicy: IfNotPresent |
 | image.repository | string | `"infracost/cloud-pricing-api"` | Cloud Pricing API image |
@@ -92,6 +95,7 @@ infracost breakdown --path /path/to/code
 | ingress.hosts[0].host | string | `"cloud-pricing-api.local"` | Host name |
 | ingress.hosts[0].paths[0].path | string | `"/"` | Path for host |
 | ingress.tls | list | `[]` | TLS configuration |
+| job.InfracostAPIKey | string | `""` |  |
 | job.affinity | object | `{}` | Job affinity |
 | job.backoffLimit | int | `6` | Job backoff limit |
 | job.failedJobsHistoryLimit | int | `5` | History limit for failed jobs |
@@ -102,16 +106,14 @@ infracost breakdown --path /path/to/code
 | job.startingDeadlineSeconds | int | `3600` | Deadline seconds for the job starting |
 | job.successfulJobsHistoryLimit | int | `5` | History limit for successful jobs |
 | job.tolerations | list | `[]` | Job tolerations |
-| mongoDBURI | string | `"mongodb://mongo:27017/pricing"` | MongoDB URI |
 | nameOverride | string | `""` | Name override for the deployed app |
 | podAnnotations | object | `{}` | Any pod annotations |
 | podSecurityContext | object | `{}` | The pod security context |
 | postgresql.enabled | bool | `true` | Deploy PostgreSQL servers. See [below](#postgresql) for more details |
-| postgresql.postgresqlDatabase | string | `"cloud-pricing-api"` |  |
-| postgresql.postgresqlUsername | string | `"cloud-pricing-api"` | Name of the PostgreSQL user |
+| postgresql.postgresqlDatabase | string | `"cloudpricingapi"` |  |
+| postgresql.postgresqlUsername | string | `"cloudpricingapi"` | Name of the PostgreSQL user |
 | postgresql.usePasswordFile | bool | `false` | Have the secrets mounted as a file instead of env vars |
 | securityContext | object | `{}` | The container security context |
-| selfHostedInfracostAPIKey | string | `""` |  |
 | service.port | int | `80` | Kubernetes service port |
 | service.type | string | `"ClusterIP"` | Kubernetes service type |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
@@ -122,7 +124,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 ```sh
 helm install cloud-pricing-api infracost/cloud-pricing-api \
-  --set selfHostedInfracostAPIKey=CUSTOM_API_KEY
+  --set api.selfHostedInfracostAPIKey=CUSTOM_API_KEY
 ```
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example:
@@ -146,13 +148,11 @@ To avoid issues when upgrading this chart, provide `postgresql.postgresqlPasswor
 This is how the Infracost team deploys the Cloud Pricing API on our EKS cluster to test it.
 
 ```sh
-export MONGODB_URI=mongodb://pricing-api-mongo:27017/pricing # TODO: Remove when we switch fully to PostgreSQL
 export DOMAIN=cloud-pricing.api.dev.infracost.io
 export CERTIFICATE_DOMAIN=*.api.dev.infracost.io
 export CERTIFICATE_ARN=$(aws acm list-certificates --query 'CertificateSummaryList[].[CertificateArn,DomainName]' --output text | grep ${CERTIFICATE_DOMAIN} | cut -f1)
 
 helm install cloud-pricing-api infracost/cloud-pricing-api \
-  --set mongoDBURI=${MONGODB_URI} \
   --set ingress.enabled=true \
   --set ingress.hosts\[0\].host=${DOMAIN} \
   --set ingress.hosts\[0\].paths\[0\].path=/\* \
@@ -180,4 +180,11 @@ To uninstall `my-release` deployment:
 
 ```sh
 helm uninstall my-release
+```
+
+To debug issues, such as `job-cron.yaml: error converting YAML to JSON: yaml: line X`, use the following:
+
+```sh
+helm template cloud-pricing-api charts/cloud-pricing-api/ --debug > out.yaml
+cat out.yaml # look for issues in the YAML in the erroring resource
 ```
