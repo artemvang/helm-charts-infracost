@@ -22,15 +22,6 @@ nameOverride: ""
 # -- Full name override for the deployed app
 fullnameOverride: ""
 
-# By default a single static API key will be created for the Cloud Pricing API.
-# To specify the API key or disable API keys use the below settings
-# -- Specify a custom API key for the Cloud Pricing API
-selfHostedInfracostAPIKey: ""
-# -- Whether to disable API authentication for the Cloud Pricing API
-disableSelfHostedInfracostAPIKey: false
-# -- MongoDB URI
-mongoDBURI: mongodb://mongo:27017/pricing
-
 serviceAccount:
   # -- Specifies whether a service account should be created
   create: true
@@ -101,11 +92,18 @@ postgresql:
   # -- Use an existing secret with the PostgreSQL password
   # existingSecret:
   # -- Name of the PostgreSQL database
-  postgresqlDatabase: cloud-pricing-api
+  postgresqlDatabase: cloudpricingapi
   # -- Name of the PostgreSQL user
-  postgresqlUsername: cloud-pricing-api
+  postgresqlUsername: cloudpricingapi
 
 api:
+  # By default a single static API key will be created for the Cloud Pricing API for your team's CLIs to use.
+  # To specify the API key or disable API keys use the below settings
+  # -- Whether to disable API authentication for the Cloud Pricing API
+  disableSelfHostedInfracostAPIKey: false
+  # -- Specify a custom API key for CLIs to authenticate with this Cloud Pricing API. Not setting this will cause the helm chat to generate one for you.
+  selfHostedInfracostAPIKey: ""
+
   # -- Replica count
   replicaCount: 1
 
@@ -169,6 +167,8 @@ api:
   affinity: {}
 
 job:
+  # Your company Infracost API key that you got from running `infracost register`. This is used to download the weekly pricing DB dump from our official service.
+  InfracostAPIKey: ""
   # -- Run the job as a one-off on deploy
   runInitJob: true
   # -- Job backoff limit

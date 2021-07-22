@@ -93,7 +93,7 @@ Get PostgreSQL port
 {{- if .Values.postgresql.enabled -}}
   {{- printf "5432" | quote -}}
 {{- else -}}
-  {{ .Values.postgresql.external.port }}
+  {{ .Values.postgresql.external.port | quote }}
 {{- end -}}
 {{- end -}}
 
