@@ -10,7 +10,9 @@ This repository contains Helm charts for:
     ```sh
     helm repo add infracost https://infracost.github.io/helm-charts/
     helm repo update
-    helm install cloud-pricing-api infracost/cloud-pricing-api
+    # `cat ~/.config/infracost/credentials.yml` or run `infracost register` to create
+    # a new one. This is used by the weekly job to download the latest cloud pricing DB dump from our service.
+    helm install cloud-pricing-api infracost/cloud-pricing-api --set job.InfracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
     ```
 
     For full details of options and see the [Cloud Pricing API chart README](https://github.com/infracost/helm-charts/blob/master/charts/cloud-pricing-api/README.md).
