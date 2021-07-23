@@ -26,5 +26,9 @@ jobs:
         run: |
           helm lint charts/*
 
+      - name: Install kubeval
+        uses: lra/setup-kubeval@v1
+
       - name: Validate generated k8s manifests
-        uses: instrumenta/kubeval-action@master
+        run: |
+          helm template charts/* | kubeval --strict
