@@ -1,0 +1,30 @@
+name: Lint helm chart
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.4.0
+
+      - name: Lint helm chart
+        run: |
+          helm lint charts/*
+
+      - name: Validate generated k8s manifests
+        uses: instrumenta/kubeval-action@master
