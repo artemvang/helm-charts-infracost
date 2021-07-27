@@ -153,11 +153,11 @@ api:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
+    #   cpu: "1"
+    #   memory: 600Mi
     # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+    #   cpu: 500m
+    #   memory: 300Mi
 
   # -- API node selector
   nodeSelector: {}
@@ -167,7 +167,7 @@ api:
   affinity: {}
 
 job:
-  # Your company Infracost API key that you got from running `infracost register`. This is used to download the weekly pricing DB dump from our official service.
+  # -- Your company Infracost API key that you got from running `infracost register`. This is used to download the weekly pricing DB dump from our official service.
   infracostAPIKey: ""
   # -- Run the job as a one-off on deploy
   runInitJob: true
@@ -189,11 +189,11 @@ job:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
+    #   cpu: 200m
+    #   memory: 600Mi
     # requests:
     #   cpu: 100m
-    #   memory: 128Mi
+    #   memory: 300Mi
 
   # -- Job node selector
   nodeSelector: {}
