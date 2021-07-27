@@ -111,7 +111,7 @@ api:
     # -- Enable the liveness probe
     enabled: true
     # -- The liveness probe initial delay seconds
-    initialDelaySeconds: 30
+    initialDelaySeconds: 5
     # -- The liveness probe period seconds
     periodSeconds: 5
     # -- The liveness probe timeout seconds
@@ -124,7 +124,7 @@ api:
     # -- Enable the readiness probe
     enabled: true
     # -- The readiness probe initial delay seconds
-    initialDelaySeconds: 30
+    initialDelaySeconds: 5
     # -- The readiness probe period seconds
     periodSeconds: 5
     # -- The readiness probe timeout seconds
@@ -165,6 +165,10 @@ api:
   tolerations: []
   # -- API affinity
   affinity: {}
+  # -- Add a sleep before the pod is stopped. This is useful if using the AWS ALB ingress controller to allow the controller to deregister the target before the pod is stopped.
+  # preStopSleepSeconds: 40
+  # -- The total time for the container to exit normally before being terminated. If specifying the preStopSleepSeconds, this value should be greater than that.
+  # terminationGracePeriodSeconds: 60
 
 job:
   # -- Your company Infracost API key that you got from running `infracost register`. This is used to download the weekly pricing DB dump from our official service.

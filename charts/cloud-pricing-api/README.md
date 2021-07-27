@@ -70,14 +70,14 @@ infracost breakdown --path /path/to/code
 | api.disableSelfHostedInfracostAPIKey | bool | `false` |  |
 | api.livenessProbe.enabled | bool | `true` | Enable the liveness probe |
 | api.livenessProbe.failureThreshold | int | `3` | The liveness probe failure threshold |
-| api.livenessProbe.initialDelaySeconds | int | `30` | The liveness probe initial delay seconds |
+| api.livenessProbe.initialDelaySeconds | int | `5` | The liveness probe initial delay seconds |
 | api.livenessProbe.periodSeconds | int | `5` | The liveness probe period seconds |
 | api.livenessProbe.successThreshold | int | `1` | The liveness probe success threshold |
 | api.livenessProbe.timeoutSeconds | int | `2` | The liveness probe timeout seconds |
 | api.nodeSelector | object | `{}` | API node selector |
 | api.readinessProbe.enabled | bool | `true` | Enable the readiness probe |
 | api.readinessProbe.failureThreshold | int | `3` | The readiness probe failure threshold |
-| api.readinessProbe.initialDelaySeconds | int | `30` | The readiness probe initial delay seconds |
+| api.readinessProbe.initialDelaySeconds | int | `5` | The readiness probe initial delay seconds |
 | api.readinessProbe.periodSeconds | int | `5` | The readiness probe period seconds |
 | api.readinessProbe.successThreshold | int | `1` | The readiness probe success threshold |
 | api.readinessProbe.timeoutSeconds | int | `2` | The readiness probe timeout seconds |
