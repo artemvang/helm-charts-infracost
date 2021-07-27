@@ -13,7 +13,7 @@ helm repo add infracost https://infracost.github.io/helm-charts/
 helm repo update
 # `cat ~/.config/infracost/credentials.yml` or run `infracost register` to create
 # a new one. This is used by the weekly job to download the latest cloud pricing DB dump from our service.
-helm install cloud-pricing-api infracost/cloud-pricing-api --set job.InfracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
+helm install cloud-pricing-api infracost/cloud-pricing-api --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
 ```
 
 Uninstalling the Chart:
@@ -95,10 +95,10 @@ infracost breakdown --path /path/to/code
 | ingress.hosts[0].host | string | `"cloud-pricing-api.local"` | Host name |
 | ingress.hosts[0].paths[0].path | string | `"/"` | Path for host |
 | ingress.tls | list | `[]` | TLS configuration |
-| job.InfracostAPIKey | string | `""` |  |
 | job.affinity | object | `{}` | Job affinity |
 | job.backoffLimit | int | `6` | Job backoff limit |
 | job.failedJobsHistoryLimit | int | `5` | History limit for failed jobs |
+| job.infracostAPIKey | string | `""` | Your company Infracost API key that you got from running `infracost register`. This is used to download the weekly pricing DB dump from our official service. |
 | job.nodeSelector | object | `{}` | Job node selector |
 | job.resources | object | `{}` | Job resource limits and requests |
 | job.runInitJob | bool | `true` | Run the job as a one-off on deploy |

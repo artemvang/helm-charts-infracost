@@ -168,7 +168,7 @@ api:
 
 job:
   # Your company Infracost API key that you got from running `infracost register`. This is used to download the weekly pricing DB dump from our official service.
-  InfracostAPIKey: ""
+  infracostAPIKey: ""
   # -- Run the job as a one-off on deploy
   runInitJob: true
   # -- Job backoff limit

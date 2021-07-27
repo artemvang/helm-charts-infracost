@@ -13,7 +13,7 @@ helm repo add infracost https://infracost.github.io/helm-charts/
 helm repo update
 # `cat ~/.config/infracost/credentials.yml` or run `infracost register` to create
 # a new one. This is used by the weekly job to download the latest cloud pricing DB dump from our service.
-helm install cloud-pricing-api infracost/cloud-pricing-api --set job.InfracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
+helm install cloud-pricing-api infracost/cloud-pricing-api --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
 ```
 
 Uninstalling the Chart:
