@@ -12,7 +12,7 @@ To install the chart with the name `cloud-pricing-api`:
 helm repo add infracost https://infracost.github.io/helm-charts/
 helm repo update
 # `cat ~/.config/infracost/credentials.yml` or run `infracost register` to create
-# a new one. This is used by the weekly job to download the latest cloud pricing DB dump from our service.
+# a new one. This is used by the weekly job to download the latest cloud pricing data from our service.
 helm install cloud-pricing-api infracost/cloud-pricing-api --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
 ```
 
@@ -30,9 +30,9 @@ If you don't have ingress enabled you can port-forward the Cloud Pricing API to 
 ```sh
 export POD_NAME=$(kubectl get pods --namespace <NAMESPACE> -l "app.kubernetes.io/name=cloud-pricing-api,app.kubernetes.io/instance=cloud-pricing-api" -o jsonpath="{.items[0].metadata.name}")
 export CONTAINER_PORT=$(kubectl get pod --namespace <NAMESPACE> $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-kubectl --namespace <NAMESPACE> port-forward $POD_NAME 8080:$CONTAINER_PORT
+kubectl --namespace <NAMESPACE> port-forward $POD_NAME 4000:$CONTAINER_PORT
 ```
-You can then use `http://localhost:8080` as the `<CLOUD_PRICING_API_ENDPOINT>` below.
+You can then use `http://localhost:4000` as the `<CLOUD_PRICING_API_ENDPOINT>` below.
 
 You can retrieve the configured static API key using:
 ```sh

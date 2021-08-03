@@ -27,7 +27,7 @@ export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ incl
 {{- $urls = append $urls (printf "http://$SERVICE_IP:%s" .Values.service.port) -}}
 
 {{- else }}
-{{- $urls = append $urls "http://127.0.0.1:8080" -}}
+{{- $urls = append $urls "http://127.0.0.1:4000" -}}
 Run the following to port-forward the Cloud Pricing API to your local machine:
 
 export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cloud-pricing-api.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
@@ -40,5 +40,5 @@ echo "export INFRACOST_API_KEY=$INFRACOST_API_KEY"
 echo "infracost breakdown --path /path/to/code\n"
 
 {{- if (and (not .Values.ingress.enabled) (contains "ClusterIP" .Values.service.type)) }}
-kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 4000:$CONTAINER_PORT
 {{- end }}

@@ -5,29 +5,24 @@
 **Note: This is under active development so is not ready to be used yet**
 
 This repository contains Helm charts for:
- * [Cloud Pricing API](https://github.com/infracost/cloud-pricing-api):
+  * [Cloud Pricing API](https://github.com/infracost/cloud-pricing-api):
 
     ```sh
     helm repo add infracost https://infracost.github.io/helm-charts/
     helm repo update
     # `cat ~/.config/infracost/credentials.yml` or run `infracost register` to create
-    # a new one. This is used by the weekly job to download the latest cloud pricing DB dump from our service.
+    # a new one. This is used by the weekly job to download the latest cloud pricing data from our service.
     helm install cloud-pricing-api infracost/cloud-pricing-api --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
     ```
 
     For full details of options and see the [Cloud Pricing API chart README](https://github.com/infracost/helm-charts/blob/master/charts/cloud-pricing-api/README.md).
 
-## Release
+## Contributing
 
-Before releasing a new version of a chart, generate the chart docs using:
+Issues and pull requests are welcome! For development details, see the [contributing](CONTRIBUTING.md) guide. For major changes, please open an issue first to discuss what you would like to change. [Join our community Slack channel](https://www.infracost.io/community-chat), we are a friendly bunch and happy to help you get started :)
 
-```sh
-brew install norwoodj/tap/helm-docs
-helm-docs
-```
+We're also looking for [Sr Full Stack Engineer](https://www.infracost.io/join-the-team) to join our team.
 
-The docs for each chart generated automatically from the README.md.gotmpl files in each chart using the `# --` comments within the chart.
+## License
 
-When changes are pushed to master there is a GitHub action that checks if the version is bumped and if so:
- * Creates a new release
- * Pushes the release to https://infracost.github.io/helm-charts
+[Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
