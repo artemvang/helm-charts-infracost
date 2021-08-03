@@ -4,7 +4,7 @@
 
 This repository contains Helm charts for:
 ## Cloud Pricing API
-See the [repo readme](https://github.com/infracost/cloud-pricing-api) for an overview of the service and the [chart README](charts/cloud-pricing-api/README.md) for deployment details.
+See the [repo readme](https://github.com/infracost/cloud-pricing-api) for an overview of the service and the [chart README](charts/cloud-pricing-api) for deployment details.
 
 ## Contributing
 
