@@ -20,9 +20,9 @@ Installing the chart will create three pods: PostgreSQL DB, Cloud Pricing API, a
 
 Uninstalling the chart will not delete the PVC used by the PostgreSQL DB.
 
-    ```sh
-    helm uninstall cloud-pricing-api
-    ```
+  ```sh
+  helm uninstall cloud-pricing-api
+  ```
 
 ## Configure CLI to use self-hosted Cloud Pricing API
 
