@@ -26,27 +26,24 @@ Uninstalling the chart will not delete the PVC used by the PostgreSQL DB.
 
 ## Configure CLI to use self-hosted Cloud Pricing API
 
-The best way to get instructions for configuring Infracost to use the self-hosted Cloud Pricing API is to check the output at the end of the `helm install` step since this contains the exact commands you need to run. If these are not available then instructions are below.
+The best way to get instructions for configuring Infracost to use the self-hosted Cloud Pricing API is to check the output at the end of the `helm install` step since this contains the exact commands you need to run. If these are not available, you can:
 
-If you don't have ingress enabled you can port-forward the Cloud Pricing API to your local machine by doing this:
-```sh
-export POD_NAME=$(kubectl get pods --namespace <NAMESPACE> -l "app.kubernetes.io/name=cloud-pricing-api,app.kubernetes.io/instance=cloud-pricing-api" -o jsonpath="{.items[0].metadata.name}")
-export CONTAINER_PORT=$(kubectl get pod --namespace <NAMESPACE> $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-kubectl --namespace <NAMESPACE> port-forward $POD_NAME 4000:$CONTAINER_PORT
-```
-You can then use `http://localhost:4000` as the `<CLOUD_PRICING_API_ENDPOINT>` below.
+1. If you don't have ingress enabled you can port-forward the Cloud Pricing API to your local machine by doing this:
+    ```sh
+    export NAMESPACE=my-namespace
+    export POD_NAME=$(kubectl get pods --namespace $NAMESPACE -l "app.kubernetes.io/name=cloud-pricing-api,app.kubernetes.io/instance=cloud-pricing-api" -o jsonpath="{.items[0].metadata.name}")
+    export CONTAINER_PORT=$(kubectl get pod --namespace $NAMESPACE $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+    kubectl --namespace $NAMESPACE port-forward $POD_NAME 4000:$CONTAINER_PORT
+    ```
 
-You can retrieve the generated API key using the following command. This is the key your Infracost CLI users will use to authenticate when calling your self-hosted Cloud Pricing API.
-```sh
-export INFRACOST_API_KEY=$(kubectl get secret --namespace <NAMESPACE> cloud-pricing-api.name --template="{{"{{"}} index .data \"self-hosted-infracost-api-key\" {{"}}"}}" | base64 -D)
-```
+2. You can then configure the Infracost CLI to use the self-hosted Cloud Pricing API using the following two environment variables. Your Infracost CLI users will use the API key to authenticate when calling your self-hosted Cloud Pricing API
+    ```sh
+    export INFRACOST_PRICING_API_ENDPOINT=http://localhost:4000
 
-To configure Infracost to use the self-hosted Cloud Pricing API you can use:
-```sh
-export INFRACOST_PRICING_API_ENDPOINT=http://<CLOUD_PRICING_API_ENDPOINT>
-export INFRACOST_API_KEY=$INFRACOST_API_KEY
-infracost breakdown --path /path/to/code
-```
+    export INFRACOST_API_KEY=$(kubectl get secret --namespace $NAMESPACE cloud-pricing-api --template="{{"{{"}} index .data \"self-hosted-infracost-api-key\" {{"}}"}}" | base64 -D)
+
+    infracost breakdown --path /path/to/code
+    ```
 
 ## Prerequisites
 
