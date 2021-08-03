@@ -2,20 +2,9 @@
 
 <a href="https://www.infracost.io/community-chat"><img alt="Community Slack channel" src="https://img.shields.io/badge/chat-Slack-%234a154b"/></a>
 
-**Note: This is under active development so is not ready to be used yet**
-
 This repository contains Helm charts for:
-  * [Cloud Pricing API](https://github.com/infracost/cloud-pricing-api):
-
-    ```sh
-    helm repo add infracost https://infracost.github.io/helm-charts/
-    helm repo update
-    # `cat ~/.config/infracost/credentials.yml` or run `infracost register` to create
-    # a new one. This is used by the weekly job to download the latest cloud pricing data from our service.
-    helm install cloud-pricing-api infracost/cloud-pricing-api --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
-    ```
-
-    For full details of options and see the [Cloud Pricing API chart README](https://github.com/infracost/helm-charts/blob/master/charts/cloud-pricing-api/README.md).
+## Cloud Pricing API
+See the [repo readme](https://github.com/infracost/cloud-pricing-api) for an overview of the service and the [chart README](charts/cloud-pricing-api/README.md) for deployment details.
 
 ## Contributing
 

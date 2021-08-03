@@ -6,23 +6,25 @@ A Helm chart for running the Infracost [Cloud Pricing API](https://github.com/in
 
 ## TL;DR
 
-To install the chart with the name `cloud-pricing-api`:
+Installing the chart will create three pods: PostgreSQL DB, Cloud Pricing API, and an init job that loads the pricing data. The init job will take a few minutes and exit after the logs show `Completed: downloading DB data` -- you should **wait** for that before running the Infracost CLI. A weekly cronjob is also created to update the prices. Our resource request/limit recommendations are commented-out in the [values.yaml](values.yaml) file per Helm best practices.
 
-```sh
-helm repo add infracost https://infracost.github.io/helm-charts/
-helm repo update
-# `cat ~/.config/infracost/credentials.yml` or run `infracost register` to create
-# a new one. This is used by the weekly job to download the latest cloud pricing data from our service.
-helm install cloud-pricing-api infracost/cloud-pricing-api --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE"
-```
+    ```sh
+    helm repo add infracost https://infracost.github.io/helm-charts/
+    helm repo update
 
-Uninstalling the Chart:
+    # Run `infracost register` to create an API key, this is used by the weekly job to download the latest cloud pricing data from us.
+    helm install cloud-pricing-api infracost/cloud-pricing-api \
+      --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
+      --set postgresql.postgresqlPassword="STRONG_PASSWORD_HERE"
+    ```
 
-```sh
-helm uninstall cloud-pricing-api
-```
+Uninstalling the chart will not delete the PVC used by the PostgreSQL DB.
 
-## Configure Infracost to use the self-hosted Cloud Pricing API
+    ```sh
+    helm uninstall cloud-pricing-api
+    ```
+
+## Configure CLI to use self-hosted Cloud Pricing API
 
 The best way to get instructions for configuring Infracost to use the self-hosted Cloud Pricing API is to check the output at the end of the `helm install` step since this contains the exact commands you need to run. If these are not available then instructions are below.
 
@@ -34,14 +36,14 @@ kubectl --namespace <NAMESPACE> port-forward $POD_NAME 4000:$CONTAINER_PORT
 ```
 You can then use `http://localhost:4000` as the `<CLOUD_PRICING_API_ENDPOINT>` below.
 
-You can retrieve the configured static API key using:
+You can retrieve the generated API key using the following command. This is the key your Infracost CLI users will use to authenticate when calling your self-hosted Cloud Pricing API.
 ```sh
 export INFRACOST_API_KEY=$(kubectl get secret --namespace <NAMESPACE> cloud-pricing-api.name --template="{{ index .data \"self-hosted-infracost-api-key\" }}" | base64 -D)
 ```
 
 To configure Infracost to use the self-hosted Cloud Pricing API you can use:
 ```sh
-export INFRACOST_PRICING_API_ENDPOINT=https://<CLOUD_PRICING_API_ENDPOINT>
+export INFRACOST_PRICING_API_ENDPOINT=http://<CLOUD_PRICING_API_ENDPOINT>
 export INFRACOST_API_KEY=$INFRACOST_API_KEY
 infracost breakdown --path /path/to/code
 ```
@@ -67,7 +69,6 @@ infracost breakdown --path /path/to/code
 | api.autoscaling.maxReplicas | int | `10` | The maximum replicas for the API autoscaler |
 | api.autoscaling.minReplicas | int | `1` | The minimum replicas for the API autoscaler |
 | api.autoscaling.targetCPUUtilizationPercentage | int | `80` | The target CPU threshold for the API autoscaler |
-| api.disableSelfHostedInfracostAPIKey | bool | `false` |  |
 | api.livenessProbe.enabled | bool | `true` | Enable the liveness probe |
 | api.livenessProbe.failureThreshold | int | `3` | The liveness probe failure threshold |
 | api.livenessProbe.initialDelaySeconds | int | `5` | The liveness probe initial delay seconds |
@@ -82,8 +83,8 @@ infracost breakdown --path /path/to/code
 | api.readinessProbe.successThreshold | int | `1` | The readiness probe success threshold |
 | api.readinessProbe.timeoutSeconds | int | `2` | The readiness probe timeout seconds |
 | api.replicaCount | int | `1` | Replica count |
-| api.resources | object | `{}` | API resource limits and requests |
-| api.selfHostedInfracostAPIKey | string | `""` | Specify a custom API key for CLIs to authenticate with this Cloud Pricing API. Not setting this will cause the helm chat to generate one for you. |
+| api.resources | object | `{}` | API resource limits and requests, our recommendations are commented-out per Helm best practices. |
+| api.selfHostedInfracostAPIKey | string | `""` | A 32 character API token that your Infracost CLI users will use to authenticate when calling your self-hosted Cloud Pricing API. If left empty, the helm chat will generate one for you. --  If you ever need to rotate the API key, you can simply update `self-hosted-infracost-api-key` in the `cloud-pricing-api` secret and restart the application. |
 | api.tolerations | list | `[]` | API tolerations |
 | fullnameOverride | string | `""` | Full name override for the deployed app |
 | image.pullPolicy | string | `"Always"` | Image pull policy pullPolicy: IfNotPresent |
@@ -98,9 +99,9 @@ infracost breakdown --path /path/to/code
 | job.affinity | object | `{}` | Job affinity |
 | job.backoffLimit | int | `6` | Job backoff limit |
 | job.failedJobsHistoryLimit | int | `5` | History limit for failed jobs |
-| job.infracostAPIKey | string | `""` | Your company Infracost API key that you got from running `infracost register`. This is used to download the weekly pricing DB dump from our official service. |
+| job.infracostAPIKey | string | `""` | Use the [Infracost CLI](https://github.com/infracost/infracost/blob/master/README.md#quick-start) `infracost register` command to get an API key so your self-hosted Cloud Pricing API can download the latest pricing data from us. |
 | job.nodeSelector | object | `{}` | Job node selector |
-| job.resources | object | `{}` | Job resource limits and requests |
+| job.resources | object | `{}` | Job resource limits and requests, our recommendations are commented-out per Helm best practices. |
 | job.runInitJob | bool | `true` | Run the job as a one-off on deploy |
 | job.schedule | string | `"0 4 * * SUN"` | Job schedule |
 | job.startingDeadlineSeconds | int | `3600` | Deadline seconds for the job starting |
@@ -139,7 +140,7 @@ By default, PostgreSQL is installed as part of the chart using the [Bitnami Post
 
 To use an external PostgreSQL server set `postgresql.enabled` to `false` and then set the `postgresql.external.*` values.
 
-To avoid issues when upgrading this chart, provide `postgresql.postgresqlPassword` for subsequent upgrades. This is due to an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise. See https://github.com/helm/charts/tree/master/stable/postgresql#upgrade for more detail.
+To avoid issues when upgrading this chart, provide `postgresql.postgresqlPassword` for subsequent installs and upgrades. This is due to an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise. See [here](https://github.com/helm/charts/tree/master/stable/postgresql#upgrade) for more detail.
 
 ## Examples
 

@@ -97,11 +97,8 @@ postgresql:
   postgresqlUsername: cloudpricingapi
 
 api:
-  # By default a single static API key will be created for the Cloud Pricing API for your team's CLIs to use.
-  # To specify the API key or disable API keys use the below settings
-  # -- Whether to disable API authentication for the Cloud Pricing API
-  disableSelfHostedInfracostAPIKey: false
-  # -- Specify a custom API key for CLIs to authenticate with this Cloud Pricing API. Not setting this will cause the helm chat to generate one for you.
+  # -- A 32 character API token that your Infracost CLI users will use to authenticate when calling your self-hosted Cloud Pricing API. If left empty, the helm chat will generate one for you.
+  # --  If you ever need to rotate the API key, you can simply update `self-hosted-infracost-api-key` in the `cloud-pricing-api` secret and restart the application.
   selfHostedInfracostAPIKey: ""
 
   # -- Replica count
@@ -146,7 +143,7 @@ api:
     # -- The target memory threshold for the API autoscaler
     # targetMemoryUtilizationPercentage: 80
 
-  # -- API resource limits and requests
+  # -- API resource limits and requests, our recommendations are commented-out per Helm best practices.
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -171,7 +168,7 @@ api:
   # terminationGracePeriodSeconds: 60
 
 job:
-  # -- Your company Infracost API key that you got from running `infracost register`. This is used to download the weekly pricing DB dump from our official service.
+  # -- Use the [Infracost CLI](https://github.com/infracost/infracost/blob/master/README.md#quick-start) `infracost register` command to get an API key so your self-hosted Cloud Pricing API can download the latest pricing data from us.
   infracostAPIKey: ""
   # -- Run the job as a one-off on deploy
   runInitJob: true
@@ -186,7 +183,7 @@ job:
   # -- Deadline seconds for the job starting
   startingDeadlineSeconds: 3600
 
-  # -- Job resource limits and requests
+  # -- Job resource limits and requests, our recommendations are commented-out per Helm best practices.
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
