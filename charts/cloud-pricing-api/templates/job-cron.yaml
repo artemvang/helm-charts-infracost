@@ -63,7 +63,7 @@ spec:
                   value: {{ .Values.job.infracostPricingAPIEndpoint }}
                 {{- end}}
                 {{- if not .Values.api.disableSelfHostedInfracostAPIKey }}
-                - name: SELF_HOSTED_INFRACOST_PRICING_API_KEY
+                - name: SELF_HOSTED_INFRACOST_API_KEY
                   valueFrom:
                     secretKeyRef:
                       name: {{ include "cloud-pricing-api.fullname" . }}
