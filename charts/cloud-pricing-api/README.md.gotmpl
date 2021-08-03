@@ -8,15 +8,15 @@
 
 Installing the chart will create three pods: PostgreSQL DB, Cloud Pricing API, and an init job that loads the pricing data. The init job will take a few minutes and exit after the logs show `Completed: downloading DB data` -- you should **wait** for that before running the Infracost CLI. A weekly cronjob is also created to update the prices. Our resource request/limit recommendations are commented-out in the [values.yaml](values.yaml) file per Helm best practices.
 
-    ```sh
-    helm repo add infracost https://infracost.github.io/helm-charts/
-    helm repo update
+  ```sh
+  helm repo add infracost https://infracost.github.io/helm-charts/
+  helm repo update
 
-    # Run `infracost register` to create an API key, this is used by the weekly job to download the latest cloud pricing data from us.
-    helm install cloud-pricing-api infracost/cloud-pricing-api \
-      --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
-      --set postgresql.postgresqlPassword="STRONG_PASSWORD_HERE"
-    ```
+  # Run `infracost register` to create an API key, this is used by the weekly job to download the latest cloud pricing data from us.
+  helm install cloud-pricing-api infracost/cloud-pricing-api \
+    --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
+    --set postgresql.postgresqlPassword="STRONG_PASSWORD_HERE"
+  ```
 
 Uninstalling the chart will not delete the PVC used by the PostgreSQL DB.
 
