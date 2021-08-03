@@ -20,9 +20,9 @@ Installing the chart will create three pods: PostgreSQL DB, Cloud Pricing API, a
 
 Uninstalling the chart will not delete the PVC used by the PostgreSQL DB.
 
-  ```sh
-  helm uninstall cloud-pricing-api
-  ```
+    ```sh
+    helm uninstall cloud-pricing-api
+    ```
 
 ## Configure CLI to use self-hosted Cloud Pricing API
 
@@ -138,7 +138,7 @@ helm install -f my-values.yaml cloud-pricing-api infracost/cloud-pricing-api
 
 By default, PostgreSQL is installed as part of the chart using the [Bitnami PostgreSQL chart](https://github.com/bitnami/charts/blob/master/bitnami/postgresql/README.md). You can specify the values for this chart by prefixing them with `postgresql.`.
 
-To use an external PostgreSQL server set `postgresql.enabled` to `false` and then set the `postgresql.external.*` values.
+To use an external PostgreSQL server (such as AWS RDS or Azure Database for PostgreSQL) set `postgresql.enabled` to `false` and then set the `postgresql.external.*` values.
 
 To avoid issues when upgrading this chart, provide `postgresql.postgresqlPassword` for subsequent installs and upgrades. This is due to an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise. See [here](https://github.com/helm/charts/tree/master/stable/postgresql#upgrade) for more detail.
 
