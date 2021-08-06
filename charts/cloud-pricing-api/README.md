@@ -18,6 +18,8 @@ Installing the chart will create three pods: PostgreSQL DB, Cloud Pricing API, a
     --set postgresql.postgresqlPassword="STRONG_PASSWORD_HERE"
   ```
 
+  We recommend you create an [ingress route](#install-in-aws-with-alb-ingress) so your Infracost CLI users can connect to your self-hosted Cloud Pricing API.
+
 Uninstalling the chart will not delete the PVC used by the PostgreSQL DB.
 
   ```sh
@@ -108,7 +110,9 @@ The best way to get instructions for configuring Infracost to use the self-hoste
 | podAnnotations | object | `{}` | Any pod annotations |
 | podSecurityContext | object | `{}` | The pod security context |
 | postgresql.enabled | bool | `true` | Deploy PostgreSQL servers. See [below](#postgresql) for more details |
-| postgresql.postgresqlDatabase | string | `"cloudpricingapi"` |  |
+| postgresql.existingSecret | string | `""` | Use an existing secret with the PostgreSQL password |
+| postgresql.external | object | `{}` | Details of external PostgreSQL server, such as AWS RDS, to use (assuming you've set postgresql.enabled to false) |
+| postgresql.postgresqlDatabase | string | `"cloudpricingapi"` | Name of the PostgreSQL database |
 | postgresql.postgresqlUsername | string | `"cloudpricingapi"` | Name of the PostgreSQL user |
 | postgresql.usePasswordFile | bool | `false` | Have the secrets mounted as a file instead of env vars |
 | securityContext | object | `{}` | The container security context |
@@ -117,6 +121,8 @@ The best way to get instructions for configuring Infracost to use the self-hoste
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+
+See the [values.yaml](values.yaml) file for parameters that our chart uses. The full list of parameters are in the [Bitnami PostgreSQL chart](https://github.com/bitnami/charts/blob/master/bitnami/postgresql/README.md); you can specify the values for this chart by prefixing them with `postgresql.`
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 
@@ -133,11 +139,9 @@ helm install -f my-values.yaml cloud-pricing-api infracost/cloud-pricing-api
 
 ## PostgreSQL
 
-By default, PostgreSQL is installed as part of the chart using the [Bitnami PostgreSQL chart](https://github.com/bitnami/charts/blob/master/bitnami/postgresql/README.md). You can specify the values for this chart by prefixing them with `postgresql.`.
+By default, PostgreSQL is installed as part of the chart using the [Bitnami PostgreSQL chart](https://github.com/bitnami/charts/blob/master/bitnami/postgresql/README.md). You can specify the values for this chart by prefixing them with `postgresql.`. To avoid issues when upgrading this chart, provide `postgresql.postgresqlPassword` for subsequent installs and upgrades. This is due to an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise. See [here](https://github.com/helm/charts/tree/master/stable/postgresql#upgrade) for more detail.
 
-To avoid issues when upgrading this chart, provide `postgresql.postgresqlPassword` for subsequent installs and upgrades. This is due to an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise. See [here](https://github.com/helm/charts/tree/master/stable/postgresql#upgrade) for more detail.
-
-To use an external PostgreSQL server (such as AWS RDS or Azure Database for PostgreSQL) set `postgresql.enabled` to `false` and then set the `postgresql.external.*` values:
+To use an external PostgreSQL server (such as AWS RDS or Azure Database for PostgreSQL), set `postgresql.enabled` to `false` and set the `postgresql.external.*` values:
 sh
 ```
 helm install cloud-pricing-api infracost/cloud-pricing-api \

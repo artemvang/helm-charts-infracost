@@ -81,20 +81,21 @@ ingress:
 postgresql:
   # -- Deploy PostgreSQL servers. See [below](#postgresql) for more details
   enabled: true
+  # -- Use an existing secret with the PostgreSQL password
+  existingSecret: ""
   # -- Have the secrets mounted as a file instead of env vars
   usePasswordFile: false
-  # external:
+  # -- Name of the PostgreSQL database
+  postgresqlDatabase: cloudpricingapi
+  # -- Name of the PostgreSQL user
+  postgresqlUsername: cloudpricingapi  
+  # -- Details of external PostgreSQL server, such as AWS RDS, to use (assuming you've set postgresql.enabled to false)
+  external: {}
   #   host:
   #   port:
   #   database:
   #   user:
   #   password:
-  # -- Use an existing secret with the PostgreSQL password
-  # existingSecret:
-  # -- Name of the PostgreSQL database
-  postgresqlDatabase: cloudpricingapi
-  # -- Name of the PostgreSQL user
-  postgresqlUsername: cloudpricingapi
 
 api:
   # -- A 32 character API token that your Infracost CLI users will use to authenticate when calling your self-hosted Cloud Pricing API. If left empty, the helm chat will generate one for you.
