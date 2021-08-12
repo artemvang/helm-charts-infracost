@@ -14,7 +14,7 @@ Installing the chart will create three pods: PostgreSQL DB, Cloud Pricing API, a
 
   # Run `infracost register` to create an API key, this is used by the weekly job to download the latest cloud pricing data from us.
   helm install cloud-pricing-api infracost/cloud-pricing-api \
-    --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
+    --set infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
     --set postgresql.postgresqlPassword="STRONG_PASSWORD_HERE"
   ```
 
@@ -155,7 +155,7 @@ To use an external PostgreSQL server (such as AWS RDS or Azure Database for Post
 sh
 ```
 helm install cloud-pricing-api infracost/cloud-pricing-api \
-  --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
+  --set infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
   --set postgresql.enabled="false" \
   --set postgresql.external.host="MY_HOST" \
   --set postgresql.external.port="MY_PORT" \
@@ -198,7 +198,7 @@ Use the following commands to upgrade to the latest released version of the Clou
 kubectl delete job -n my-namespace hosted-cloud-pricing-api-init-job
 
 helm upgrade cloud-pricing-api infracost/cloud-pricing-api \
-    --set job.infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
+    --set infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
     --set postgresql.postgresqlPassword="STRONG_PASSWORD_HERE"
 ```
 
