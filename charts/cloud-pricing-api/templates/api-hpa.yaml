@@ -11,7 +11,7 @@ spec:
     kind: Deployment
     name: {{ include "cloud-pricing-api.fullname" . }}
   minReplicas: {{ .Values.api.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.api.utoscaling.maxReplicas }}
+  maxReplicas: {{ .Values.api.autoscaling.maxReplicas }}
   metrics:
     {{- if .Values.api.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource
