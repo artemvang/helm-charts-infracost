@@ -129,7 +129,7 @@ helm install cloud-pricing-api infracost/cloud-pricing-api \
 
 Use the following commands to upgrade to the latest released version of the Cloud Pricing API and Helm chart; you should pass-in any variables that you set during install with `--set`:
 ```
-kubectl delete job -n my-namespace hosted-cloud-pricing-api-init-job
+kubectl delete job -n my-namespace cloud-pricing-api-init-job
 
 helm upgrade cloud-pricing-api infracost/cloud-pricing-api \
     --set infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
