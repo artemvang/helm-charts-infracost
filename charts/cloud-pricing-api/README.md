@@ -1,6 +1,6 @@
 # Cloud Pricing API
 
-![Version: 0.5.6](https://img.shields.io/badge/Version-0.5.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.3.5](https://img.shields.io/badge/AppVersion-v0.3.5-informational?style=flat-square)
+![Version: 0.5.7](https://img.shields.io/badge/Version-0.5.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.3.5](https://img.shields.io/badge/AppVersion-v0.3.5-informational?style=flat-square)
 
 A Helm chart for running the Infracost [Cloud Pricing API](https://github.com/infracost/cloud-pricing-api).
 
@@ -97,6 +97,7 @@ The best way to get instructions for configuring Infracost to use the self-hoste
 | api.resources | object | `{"limits":{"cpu":"1","memory":"512Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}` | API resource limits and requests, our request recommendations are based on minimal requirements and the limit recommendations are based on usage in a high-traffic production environment. If you are running on environments like Minikube you may wish to remove these recommendations. |
 | api.selfHostedInfracostAPIKey | string | `""` | A 32 character API token that your Infracost CLI users will use to authenticate when calling your self-hosted Cloud Pricing API. If left empty, the helm chat will generate one for you. If you ever need to rotate the API key, you can simply update `self-hosted-infracost-api-key` in the `cloud-pricing-api` secret and restart the application. |
 | api.tolerations | list | `[]` | API tolerations |
+| existingSecretAPIKey | string | `""` | If you'd rather use your own secret you can leave the above empty and instead specify the name of your secret below |
 | fullnameOverride | string | `""` | Full name override for the deployed app |
 | image.pullPolicy | string | `"Always"` | Image pull policy pullPolicy: IfNotPresent |
 | image.repository | string | `"infracost/cloud-pricing-api"` | Cloud Pricing API image |
