@@ -12,7 +12,7 @@ Installing the chart will create three pods: PostgreSQL DB, Cloud Pricing API, a
   helm repo add infracost https://infracost.github.io/helm-charts/
   helm repo update
 
-  # Run `infracost register` to create an API key, this is used by the weekly job to download the latest cloud pricing data from us.
+  # Run `infracost auth login` to create an API key, this is used by the weekly job to download the latest cloud pricing data from us.
   helm install cloud-pricing-api infracost/cloud-pricing-api \
     --set infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
     --set postgresql.postgresqlPassword="STRONG_PASSWORD_HERE"
@@ -103,7 +103,7 @@ The best way to get instructions for configuring Infracost to use the self-hoste
 | image.repository | string | `"infracost/cloud-pricing-api"` | Cloud Pricing API image |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` | Any image pull secrets |
-| infracostAPIKey | string | `""` | Use the [Infracost CLI](https://github.com/infracost/infracost/blob/master/README.md#quick-start) `infracost register` command to get an API key so your self-hosted Cloud Pricing API can download the latest pricing data from us. |
+| infracostAPIKey | string | `""` | Use the [Infracost CLI](https://github.com/infracost/infracost/blob/master/README.md#quick-start) `infracost auth login` command to get an API key so your self-hosted Cloud Pricing API can download the latest pricing data from us. |
 | ingress.annotations | object | `{}` | Ingress annotation |
 | ingress.className | string | `""` | Ingress class field that replace the kubernetes.io/ingress.class annotation starting at kubernetes 1.18 |
 | ingress.enabled | bool | `false` | Enable the ingress controller resource |

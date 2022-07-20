@@ -12,7 +12,7 @@ Installing the chart will create three pods: PostgreSQL DB, Cloud Pricing API, a
   helm repo add infracost https://infracost.github.io/helm-charts/
   helm repo update
 
-  # Run `infracost register` to create an API key, this is used by the weekly job to download the latest cloud pricing data from us.
+  # Run `infracost auth login` to create an API key, this is used by the weekly job to download the latest cloud pricing data from us.
   helm install cloud-pricing-api infracost/cloud-pricing-api \
     --set infracostAPIKey="YOUR_INFRACOST_API_KEY_HERE" \
     --set postgresql.postgresqlPassword="STRONG_PASSWORD_HERE"
