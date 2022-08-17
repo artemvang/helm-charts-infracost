@@ -24,6 +24,10 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
         spec:
+          {{- if .Values.job.extraVolumes }}
+          volumes:
+            {{- toYaml .Values.job.extraVolumes | nindent 12 }}
+          {{- end }}
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:
             {{- toYaml . | nindent 12 }}
@@ -44,6 +48,10 @@ spec:
               command: ["npm", "run", "job:update"]
               resources:
                 {{- toYaml .Values.job.resources | nindent 16 }}
+              {{- if .Values.job.extraVolumeMounts }}
+              volumeMounts:
+              {{- toYaml .Values.job.extraVolumeMounts | nindent 16 }}
+              {{- end}}
               env:
                 - name: POSTGRES_HOST
                   value: {{ include "cloud-pricing-api.postgresql.host" . }}
@@ -75,7 +83,11 @@ spec:
                 - name: SELF_HOSTED_INFRACOST_API_KEY
                   valueFrom:
                     secretKeyRef:
+                      {{- if not .Values.api.existingSecretSelfHostedAPIKey }}
                       name: {{ include "cloud-pricing-api.fullname" . }}
+                      {{- else }}
+                      name: {{ .Values.api.existingSecretSelfHostedAPIKey }}
+                      {{- end}}
                       key: self-hosted-infracost-api-key
                 {{- end }}
                 - name: LOG_LEVEL

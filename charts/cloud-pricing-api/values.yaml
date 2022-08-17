@@ -118,6 +118,8 @@ api:
   # -- A 32 character API token that your Infracost CLI users will use to authenticate when calling your self-hosted Cloud Pricing API. If left empty, the helm chat will generate one for you.
   # If you ever need to rotate the API key, you can simply update `self-hosted-infracost-api-key` in the `cloud-pricing-api` secret and restart the application.
   selfHostedInfracostAPIKey: ""
+  # -- If you'd rather use have it that in a secret you can leave the above empty and instead specify the name of your secret below
+  existingSecretSelfHostedAPIKey: ""
   # -- Set this to true to opt-out of telemetry
   disableTelemetry: false
   # -- Set this to debug, info, warn or error
@@ -188,6 +190,16 @@ api:
 
   # -- API extra sidecar containers
   extraContainers: []
+  # -- Optionally specify additional volumes
+  extraVolumes: []
+  #   - name: some-volume-name
+  #     emptyDir: {}
+
+  # -- Optionally specify additional volume mounts for the container.
+  extraVolumeMounts: []
+  # extraVolumeMounts:
+  #   - name: some-volume-name
+  #     mountPath: /path/in/container
 
 job:
   # -- Run the job as a one-off on deploy
@@ -226,3 +238,14 @@ job:
 
   # -- Job extra sidecar containers
   extraContainers: []
+  # -- Optionally specify additional volumes
+  extraVolumes: []
+  #   - name: some-volume-name
+  #     emptyDir: {}
+
+  # -- Optionally specify additional volume mounts for the container.
+  extraVolumeMounts: []
+  # extraVolumeMounts:
+  #   - name: some-volume-name
+  #     mountPath: /path/in/container
+
