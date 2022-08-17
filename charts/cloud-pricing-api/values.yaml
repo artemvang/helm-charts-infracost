@@ -195,7 +195,7 @@ api:
   #   - name: some-volume-name
   #     emptyDir: {}
 
-  # -- Optionally specify additional volume mounts for the container.
+  # -- Optionally specify additional volume mounts for the container
   extraVolumeMounts: []
   # extraVolumeMounts:
   #   - name: some-volume-name
@@ -243,7 +243,7 @@ job:
   #   - name: some-volume-name
   #     emptyDir: {}
 
-  # -- Optionally specify additional volume mounts for the container.
+  # -- Optionally specify additional volume mounts for the container
   extraVolumeMounts: []
   # extraVolumeMounts:
   #   - name: some-volume-name

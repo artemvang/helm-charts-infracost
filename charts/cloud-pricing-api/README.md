@@ -78,7 +78,10 @@ The best way to get instructions for configuring Infracost to use the self-hoste
 | api.autoscaling.minReplicas | int | `1` | The minimum replicas for the API autoscaler |
 | api.autoscaling.targetCPUUtilizationPercentage | int | `80` | The target CPU threshold for the API autoscaler |
 | api.disableTelemetry | bool | `false` | Set this to true to opt-out of telemetry |
+| api.existingSecretSelfHostedAPIKey | string | `""` | If you'd rather use have it that in a secret you can leave the above empty and instead specify the name of your secret below |
 | api.extraContainers | list | `[]` | API extra sidecar containers |
+| api.extraVolumeMounts | list | `[]` | Optionally specify additional volume mounts for the container |
+| api.extraVolumes | list | `[]` | Optionally specify additional volumes |
 | api.livenessProbe.enabled | bool | `true` | Enable the liveness probe |
 | api.livenessProbe.failureThreshold | int | `3` | The liveness probe failure threshold |
 | api.livenessProbe.initialDelaySeconds | int | `5` | The liveness probe initial delay seconds |
@@ -114,6 +117,8 @@ The best way to get instructions for configuring Infracost to use the self-hoste
 | job.affinity | object | `{}` | Job affinity |
 | job.backoffLimit | int | `6` | Job backoff limit |
 | job.extraContainers | list | `[]` | Job extra sidecar containers |
+| job.extraVolumeMounts | list | `[]` | Optionally specify additional volume mounts for the container |
+| job.extraVolumes | list | `[]` | Optionally specify additional volumes |
 | job.failedJobsHistoryLimit | int | `5` | History limit for failed jobs |
 | job.logLevel | string | `"info"` | Set this to debug, info, warn or error |
 | job.nodeSelector | object | `{}` | Job node selector |
@@ -129,7 +134,7 @@ The best way to get instructions for configuring Infracost to use the self-hoste
 | podSecurityContext | object | `{}` | The pod security context |
 | postgresql.enabled | bool | `true` | Deploy PostgreSQL servers. See [below](#postgresql) for more details |
 | postgresql.existingSecret | string | `""` | Use an existing secret with the PostgreSQL password |
-| postgresql.external | object | `{}` | Details of external PostgreSQL server, such as AWS RDS, to use (assuming you've set postgresql.enabled to false) |
+| postgresql.external | object | `{}` | Details of external PostgreSQL server, such as AWS RDS, to use (assuming you've set postgresql.enabled to false. NOTE: In this case if existingSecret is set, it will be used for external.password) |
 | postgresql.postgresqlDatabase | string | `"cloudpricingapi"` | Name of the PostgreSQL database |
 | postgresql.postgresqlUsername | string | `"cloudpricingapi"` | Name of the PostgreSQL user |
 | postgresql.usePasswordFile | bool | `false` | Have the secrets mounted as a file instead of env vars |
