@@ -127,6 +127,13 @@ api:
 
   # -- Replica count
   replicaCount: 1
+  
+  # -- Spread pods evenly accross all zones
+  topologySpread:
+    enabled: true
+    topologyKey: topology.kubernetes.io/zone
+    maxSkew : 1
+    whenUnsatisfiable: DoNotSchedule
 
   livenessProbe:
     # -- Enable the liveness probe
