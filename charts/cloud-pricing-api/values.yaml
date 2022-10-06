@@ -128,12 +128,15 @@ api:
   # -- Replica count
   replicaCount: 1
   
-  # -- Spread pods evenly accross all zones
   topologySpread:
-    enabled: true
-    topologyKey: topology.kubernetes.io/zone
+    # -- Enable Pods spreading among zones
+    enabled: false
+    # -- Degree to which Pods may be unevenly distributed. See [docs](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/#spread-constraint-definition).
     maxSkew : 1
-    whenUnsatisfiable: DoNotSchedule
+    # -- Key of node labels
+    topologyKey: topology.kubernetes.io/zone
+    # -- How to deal with a Pod if it doesn't satisfy the spread constraint
+    whenUnsatisfiable: ScheduleAnyway
 
   livenessProbe:
     # -- Enable the liveness probe
