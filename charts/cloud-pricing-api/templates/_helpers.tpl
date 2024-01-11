@@ -79,61 +79,33 @@ If release name contains chart name it will be used as a full name.
 Get PostgreSQL host
 */}}
 {{- define "cloud-pricing-api.postgresql.host" -}}
-{{- if .Values.postgresql.enabled -}}
-  {{- printf "%s" (include "cloud-pricing-api.postgresql.fullname" .) -}}
-{{- else -}}
-  {{ .Values.postgresql.external.host }}
-{{- end -}}
+{{ .Values.postgresql.host }}
 {{- end -}}
 
 {{/*
 Get PostgreSQL port
 */}}
 {{- define "cloud-pricing-api.postgresql.port" -}}
-{{- if .Values.postgresql.enabled -}}
-  {{- printf "5432" | quote -}}
-{{- else -}}
-  {{ .Values.postgresql.external.port | quote }}
-{{- end -}}
+{{ .Values.postgresql.port | quote }}
 {{- end -}}
 
 {{/*
 Get PostgreSQL database
 */}}
 {{- define "cloud-pricing-api.postgresql.database" -}}
-{{- if .Values.postgresql.enabled -}}
-  {{- .Values.postgresql.postgresqlDatabase -}}
-{{- else -}}
-  {{ .Values.postgresql.external.database }}
-{{- end -}}
+{{ .Values.postgresql.database }}
 {{- end -}}
 
 {{/*
 Get PostgreSQL user
 */}}
 {{- define "cloud-pricing-api.postgresql.user" -}}
-{{- if .Values.postgresql.enabled -}}
-  {{- .Values.postgresql.postgresqlUsername -}}
-{{- else -}}
-  {{ .Values.postgresql.external.user }}
-{{- end -}}
+{{ .Values.postgresql.user }}
 {{- end -}}
 
 {{/*
 Get the PostgreSQL secret name
 */}}
 {{- define "cloud-pricing-api.postgresql.secretName" -}}
-{{- if .Values.postgresql.enabled }}
-    {{- if .Values.postgresql.existingSecret }}
-        {{- printf "%s" .Values.postgresql.existingSecret -}}
-    {{- else -}}
-        {{- printf "%s" (include "cloud-pricing-api.postgresql.fullname" .) -}}
-    {{- end -}}
-{{- else -}}
-    {{- if .Values.postgresql.existingSecret }}
-        {{- printf "%s" .Values.postgresql.existingSecret -}}
-    {{- else -}}
-      {{- printf "%s" (include "cloud-pricing-api.fullname" .) -}}
-    {{- end -}}
-{{- end -}}
+{{- printf "%s" (include "cloud-pricing-api.fullname" .) -}}
 {{- end -}}

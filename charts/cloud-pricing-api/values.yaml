@@ -9,14 +9,14 @@ existingSecretAPIKey: ""
 
 image:
   # -- Cloud Pricing API image
-  repository: infracost/cloud-pricing-api
+  repository: us-central1-docker.pkg.dev/main-scalr-dev/infracost/cloud-pricing
 
   # -- Image pull policy
   # pullPolicy: IfNotPresent
   pullPolicy: Always
 
   # -- Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "0.3"
 
 # -- Any image pull secrets
 imagePullSecrets: []
@@ -96,23 +96,12 @@ ingress:
   className: ""
 
 postgresql:
-  # -- Deploy PostgreSQL servers. See [below](#postgresql) for more details
-  enabled: true
-  # -- Use an existing secret with the PostgreSQL password
-  existingSecret: ""
-  # -- Have the secrets mounted as a file instead of env vars
-  usePasswordFile: false
-  # -- Name of the PostgreSQL database
-  postgresqlDatabase: cloudpricingapi
-  # -- Name of the PostgreSQL user
-  postgresqlUsername: cloudpricingapi
   # -- Details of external PostgreSQL server, such as AWS RDS, to use (assuming you've set postgresql.enabled to false. NOTE: In this case if existingSecret is set, it will be used for external.password)
-  external: {}
-  #   host:
-  #   port:
-  #   database:
-  #   user:
-  #   password:
+  host: ""
+  port: 5432
+  database: ""
+  user: ""
+  password: ""
 
 api:
   # -- A 32 character API token that your Infracost CLI users will use to authenticate when calling your self-hosted Cloud Pricing API. If left empty, the helm chat will generate one for you.
@@ -210,52 +199,3 @@ api:
   # extraVolumeMounts:
   #   - name: some-volume-name
   #     mountPath: /path/in/container
-
-job:
-  # -- Run the job as a one-off on deploy
-  runInitJob: true
-  # -- Job backoff limit
-  backoffLimit: 6
-  # -- Job schedule
-  schedule: "0 4 * * SUN"
-    # -- Set this to debug, info, warn or error
-  logLevel: info
-  # -- History limit for successful jobs
-  successfulJobsHistoryLimit: 5
-  # -- History limit for failed jobs
-  failedJobsHistoryLimit: 5
-  # -- Deadline seconds for the job starting
-  startingDeadlineSeconds: 3600
-  # -- (int) Marks the jobs as eligible for automatic cleanup after the job has finished and the TTL has expired, whether the job is successful or failed. This avoids the need to delete the init job before upgrading the Helm chart.
-  ttlSecondsAfterFinished:
-
-  # -- Job resource limits and requests.
-  # If you are running on environments like Minikube you may wish to remove these recommendations.
-  resources:
-    limits:
-      cpu: 200m
-      memory: 640Mi
-    requests:
-      cpu: 50m
-      memory: 128Mi
-
-  # -- Job node selector
-  nodeSelector: {}
-  # -- Job tolerations
-  tolerations: []
-  # -- Job affinity
-  affinity: {}
-
-  # -- Job extra sidecar containers
-  extraContainers: []
-  # -- Optionally specify additional volumes
-  extraVolumes: []
-  #   - name: some-volume-name
-  #     emptyDir: {}
-
-  # -- Optionally specify additional volume mounts for the container
-  extraVolumeMounts: []
-  # extraVolumeMounts:
-  #   - name: some-volume-name
-  #     mountPath: /path/in/container
-
