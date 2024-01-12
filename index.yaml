@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  cloud-pricing-api:
+  - apiVersion: v2
+    appVersion: v0.3.8
+    created: "2024-01-12T09:21:43.238463673Z"
+    description: A Helm chart for running the Infracost [Cloud Pricing API](https://github.com/infracost/cloud-pricing-api).
+    digest: 18fc5d328b85432f7d01ca5d62aceadbd5b248583c92619fbef8d62fbf802704
+    name: cloud-pricing-api
+    type: application
+    urls:
+    - https://github.com/artemvang/helm-charts-infracost/releases/download/cloud-pricing-api-0.5.11/cloud-pricing-api-0.5.11.tgz
+    version: 0.5.11
+generated: "2024-01-12T09:21:43.238473061Z"
