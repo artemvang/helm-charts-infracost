@@ -18,7 +18,12 @@ jobs:
         uses: azure/setup-helm@v1
         with:
           version: v3.4.0
-          
+      
+      - name: Set identity
+        run: |
+          git config --global user.name "artemvang"
+          git config --global user.email "artem@kecyk.io"
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.2.1
         env:
