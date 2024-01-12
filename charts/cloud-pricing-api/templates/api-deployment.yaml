@@ -100,15 +100,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "cloud-pricing-api.postgresql.secretName" . }}
                   key: postgresql-password
-            - name: INFRACOST_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  {{- if not .Values.existingSecretAPIKey }}
-                  name: {{ include "cloud-pricing-api.fullname" . }}
-                  {{- else }}
-                  name: {{ .Values.existingSecretAPIKey }}
-                  {{- end }}
-                  key: infracost-api-key
             {{- if not .Values.api.disableSelfHostedInfracostAPIKey }}
             - name: SELF_HOSTED_INFRACOST_API_KEY
               valueFrom:
